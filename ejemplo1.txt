@@ -9,7 +9,7 @@ class CustomMapView extends Component {
         <MapViewComponent/>
         <Text>
           MapViewComponent could use native Swift, Java, or Objective-C -
-          the product development process is the same.
+          the product development process is the same, hello.
         </Text>
       </View>
     );
