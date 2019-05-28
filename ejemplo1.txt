@@ -1,0 +1,17 @@
+import React,{Component} from 'react';
+import {Text, View} from 'react-native';
+import {MapViewComponent} from './your-native-map-implementation';
+
+class CustomMapView extends Component {
+  render() {
+    return (
+      <View>
+        <MapViewComponent/>
+        <Text>
+          MapViewComponent could use native Swift, Java, or Objective-C -
+          the product development process is the same.
+        </Text>
+      </View>
+    );
+  }
+}

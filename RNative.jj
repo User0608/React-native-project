@@ -1,0 +1,94 @@
+options {
+  IGNORE_CASE = true;
+}
+PARSER_BEGIN(RNative)
+
+  public class RNative{
+
+    public static void main ( String args[ ] ) {      
+      RNative parser;
+      if(args.length == 0){
+        System.out.print("Ingrese cadena");
+        parser = new RNative(System.in);
+      }
+      else{      
+        try {
+          parser = new RNative(new java.io.FileInputStream(args[0]));
+            System.out.println ("Analizando archivo" + args[0] );
+        }
+        catch(java.io.FileNotFoundException e) {
+          System.out.println ("El fichero " + args[0] + " no ha sido encontrado.");
+          return;
+        }
+      }  
+      try {
+        parser.startLexico();
+        System.out.println ("El archivo es valido.");
+      }
+      catch(ParseException e){
+        System.out.println ("Ha ocurrido un error durante el analisis.");
+        System.out.println (e.getMessage());
+      }
+      catch(TokenMgrError e){
+        System.out.println ("Ha ocurrido un error.");
+        System.out.println (e.getMessage());
+      }       
+    }        
+  } 
+
+PARSER_END(RNative)
+
+
+SKIP : { " " |  "\t"|  "\n"|  "\r"|  <"rem" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
+}
+//palabras reservadas
+TOKEN:{
+      <IMPORT : (<IDENTIFICADOR>",")*<IDENTIFICADOR><PUNTOYCOMA>>{}
+      |<COMPONENT:"Component"> {} 
+      |<CLASS:"class"> {} 
+      |<RETURN:"return"> {} 
+      |<EXTENDS :"extends"> {}             
+      |<DEFAUL:"default"> {}  
+      |<STYLE :"style"> {}   
+      |<CONTAINER :"container"> {}    
+     
+      }
+
+TOKEN:{
+       <STYLE_OBJ :<STYLE>"="<LLAVEIZQ><TEXT><LLAVEDER>> {} 
+      |<ATRIBUTO:<TEXT>":"<TEXT>> {}     
+      }
+      
+TOKEN: {
+      <PUNTOYCOMA : ";"> {}     
+      |<COMA : ","> {} 
+      |<GUION: "-">{}
+      |<MENOR: "<">{}
+      |<MAYOR: ">">{}
+      |<IGUAL: "=">{}
+      |<DOSPUNTO: ":">{} 
+      |<BARRA: "/">{}      
+      |<PARENIZQ : "("> {}
+      |<PARENDER : ")"> {}            
+      |<CORCHETED: "]">{} 
+      |<CORCHETEI: "[">{} 
+      |<LLAVEIZQ : "{"> {}
+      |<LLAVEDER : "}"> {}
+      |<COMSIMPPLE : "'"> {}
+      |<FLECHA: "=>">{}     
+    }
+//clase
+TOKEN: {
+      <IDENTIFICADOR: (["A"-"Z","a"-"z"])+(["0"-"9"])*("_")*> {}               
+      |<TEXT:(["A"-"Z","a"-"z"]|["0"-"9"]|".")*> {}
+      |<DATO:<LLAVEIZQ>"key:"<COMSIMPPLE><TEXT><COMSIMPPLE><LLAVEDER>>{}
+      |<COMENTARIO:<BARRA><BARRA><TEXT>>{}
+    }   
+
+
+void startLexico() : {}{
+ (<IMPORT>|<COMPONENT>|<CLASS>|<RETURN>|<EXTENDS>|<DEFAUL>|<STYLE>|<CONTAINER>
+  |<STYLE_OBJ>|<ATRIBUTO>
+  |<PUNTOYCOMA>|<COMA>|<GUION>|<MENOR>|<MAYOR>|<IGUAL>|<DOSPUNTO>|<BARRA>|<PARENIZQ>|<PARENDER>|<CORCHETEI>|<CORCHETED>|<LLAVEIZQ>|<LLAVEDER>|<COMSIMPPLE>|<FLECHA>
+  |<IDENTIFICADOR>|<TEXT>|<DATO>|<COMENTARIO>)*<EOF>
+}
