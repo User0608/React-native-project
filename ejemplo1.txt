@@ -1,17 +1,37 @@
-import React,{Component} from 'react';
-import {Text, View} from 'react-native';
-import {MapViewComponent} from './your-native-map-implementation';
-
-class CustomMapView extends Component {
-  render() {
-    return (
-      <View>
-        <MapViewComponent/>
-        <Text>
-          MapViewComponent could use native Swift, Java, or Objective-C -
-          the product development process is the same, hello.
-        </Text>
-      </View>
-    );
-  }
-}
+const styles = StyleSheet.create({
+    boton:{
+        width: 300,
+        height: 30,
+        backgroundColor: 'blue',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 60,
+        marginBottom: 10,
+        borderRadius: 8,
+        borderWidth: 1
+    }, 
+    textoBoton: {
+        color: 'white'
+    },
+    container: {
+        flex: 1,
+        alignItems: 'stretch',
+        padding: 30 
+    },
+    title:{
+        marginTop: 100,
+        fontSize: 25,
+        textAlign: 'center',
+        color: 'red',
+        backgroundColor:'rgba(0,0,0,0)' 
+    }
+})
+	import React, { Component } from 'react';
+import {
+  AppRegistry,
+  StyleSheet,
+  Text,
+  View,
+    Navigator,
+    TouchableHighlight
+} from 'react-native';

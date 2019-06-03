@@ -1,6 +1,4 @@
-options {
-  IGNORE_CASE = true;
-}
+
 PARSER_BEGIN(RNative)
 
   public class RNative{
@@ -34,31 +32,34 @@ PARSER_BEGIN(RNative)
         System.out.println (e.getMessage());
       }       
     }        
+   
   } 
 
 PARSER_END(RNative)
 
 
-SKIP : { " " |  "\t"|  "\n"|  "\r"|  <"rem" (~["\n","\r"])* ("\n" | "\r" | "\r\n")>
-}
+SKIP : { " " |  "\t"|  "\n"| "\r"| "\r\n"}
 //palabras reservadas
 TOKEN:{
-      <IMPORT : (<IDENTIFICADOR>",")*<IDENTIFICADOR><PUNTOYCOMA>>{}
-      |<COMPONENT:"Component"> {} 
+      <IMPORT :"import">{System.out.println("< Import:"+image+" >");} 
       |<CLASS:"class"> {} 
+      |<EXTENDS :"extends"> {} 
       |<RETURN:"return"> {} 
-      |<EXTENDS :"extends"> {}             
+      |<SUPER:"super"> {} 
+      |<THIS:"this"> {} 
+      |<IF:"if"> {}  
+      |<FOR:"for"> {}  
+      |<WHILE:"while"> {}  
+      |<CONST:"const"> {} 
+      |<SWITCH:"switch">{} 
+      |<CASE:"case"> {} 
+      |<FUNCION:"function">{}                 
+      |<NULL:"null"> {}  
       |<DEFAUL:"default"> {}  
-      |<STYLE :"style"> {}   
-      |<CONTAINER :"container"> {}    
-     
+      |<FROM:"from"> {} 
+      |<VAR:"var"> {} 
       }
 
-TOKEN:{
-       <STYLE_OBJ :<STYLE>"="<LLAVEIZQ><TEXT><LLAVEDER>> {} 
-      |<ATRIBUTO:<TEXT>":"<TEXT>> {}     
-      }
-      
 TOKEN: {
       <PUNTOYCOMA : ";"> {}     
       |<COMA : ","> {} 
@@ -67,27 +68,56 @@ TOKEN: {
       |<MAYOR: ">">{}
       |<IGUAL: "=">{}
       |<DOSPUNTO: ":">{} 
+      |<PUNTO: ".">{} 
       |<BARRA: "/">{}      
+      |<BARRAI: "\\">{}   
       |<PARENIZQ : "("> {}
       |<PARENDER : ")"> {}            
       |<CORCHETED: "]">{} 
       |<CORCHETEI: "[">{} 
       |<LLAVEIZQ : "{"> {}
       |<LLAVEDER : "}"> {}
-      |<COMSIMPPLE : "'"> {}
+      |<COMSIMPPLE : "\'"> {}
       |<FLECHA: "=>">{}     
     }
+TOKEN:{
+  <ATRIBUTO:"width"|"height"|"backgroundColor"|"alignItems"|"justifyContent"|"textAlign"
+                 |"marginTop"|"marginLeft"|"marginRight"|"marginBottom"|"borderRadius"
+                 |"borderWidth"|"padding"|"color"|"flex"|"fontSize">{System.out.println("\tAtributo :"+image);}
+
+  |<OBJETO:"ActivityIndicator"|"AppRegistry"|"StyleSheet"|"Text"|"View"
+                 |"Button"|"AppRegistry"|"Navigator"|"TouchableHighlight"|"Component"
+                 |"DatePickerIOS"|"requireNativeComponent">{System.out.println("\tObjeto:"+image);}
+
+}
 //clase
 TOKEN: {
-      <IDENTIFICADOR: (["A"-"Z","a"-"z"])+(["0"-"9"])*("_")*> {}               
-      |<TEXT:(["A"-"Z","a"-"z"]|["0"-"9"]|".")*> {}
-      |<DATO:<LLAVEIZQ>"key:"<COMSIMPPLE><TEXT><COMSIMPPLE><LLAVEDER>>{}
+      <IDENTIFICADOR: (["A"-"Z","a"-"z"])(["A"-"Z","a"-"z","0"-"9","_"])*>{System.out.println("Identificador:"+image);}               
+      |<NUMERO: (["0"-"9"])+(<PUNTO>)?(["0"-"9"])*>{}  
+      |<TEXT:(["A"-"Z","a"-"z","0"-"9","*","_","-"])+> {}      
+      |<LIBRERIA:<COMSIMPPLE>(<PUNTO><BARRAI>)?(["A"-"Z","a"-"z","_","-"])*<COMSIMPPLE>>{}
+      |<PAQUETE: (<IDENTIFICADOR><PUNTO>)*<IDENTIFICADOR>>{}
       |<COMENTARIO:<BARRA><BARRA><TEXT>>{}
+      |<COLOR:<COMSIMPPLE>"rgba"<PARENIZQ><NUMERO>
+        <COMA><NUMERO><COMA><NUMERO><COMA><NUMERO><PARENDER><COMSIMPPLE>>{}      
+     
     }   
 
 
 void startLexico() : {}{
- (<IMPORT>|<COMPONENT>|<CLASS>|<RETURN>|<EXTENDS>|<DEFAUL>|<STYLE>|<CONTAINER>
-  |<STYLE_OBJ>|<ATRIBUTO>
-  |<PUNTOYCOMA>|<COMA>|<GUION>|<MENOR>|<MAYOR>|<IGUAL>|<DOSPUNTO>|<BARRA>|<PARENIZQ>|<PARENDER>|<CORCHETEI>|<CORCHETED>|<LLAVEIZQ>|<LLAVEDER>|  	<COMSIMPPLE>|<FLECHA>|<IDENTIFICADOR>|<TEXT>|<DATO>|<COMENTARIO>)*<EOF>
+  (_estilos()|_import())*<EOF>
+}
+void _import():{}{
+  <IMPORT>(<IDENTIFICADOR><COMA>)?(<LLAVEIZQ><OBJETO>
+  (<COMA><OBJETO>)*<LLAVEDER>)?<FROM><LIBRERIA><PUNTOYCOMA>
+  {System.out.println("\t\t\t\t\tThis is Ok");}
+}
+void _atributos():{}{
+  <LLAVEIZQ><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>)
+  (<COMA><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>))*<LLAVEDER>
+  {System.out.println("\t\t\t\t\tThis is Ok");}
+}
+void _estilos():{}{
+  <CONST ><IDENTIFICADOR><IGUAL><PAQUETE><PARENIZQ><LLAVEIZQ><IDENTIFICADOR><DOSPUNTO>_atributos()
+  (<COMA><IDENTIFICADOR><DOSPUNTO>_atributos())*<LLAVEDER><PARENDER>
 }
