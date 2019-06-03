@@ -20,8 +20,7 @@ PARSER_BEGIN(RNative)
         }
       }  
       try {
-        parser.startLexico();
-        System.out.println ("El archivo es valido.");
+        parser.startLexico();       
       }
       catch(ParseException e){
         System.out.println ("Ha ocurrido un error durante el analisis.");
@@ -63,22 +62,30 @@ TOKEN:{
 TOKEN: {
       <PUNTOYCOMA : ";"> {}     
       |<COMA : ","> {} 
-      |<GUION: "-">{}
+      |<GUION_MENOS: "-">{}
+      |<MAS: "+">{}
       |<MENOR: "<">{}
       |<MAYOR: ">">{}
+      |<NEGADOR: "!">{}
+      |<INTEROGANTE:"?">{}
+      |<ASPER:"&">{}
+      |<BRARRRA:"|">{}
       |<IGUAL: "=">{}
       |<DOSPUNTO: ":">{} 
       |<PUNTO: ".">{} 
       |<BARRA: "/">{}      
-      |<BARRAI: "\\">{}   
+      |<BARRAI: "\\">{}         
       |<PARENIZQ : "("> {}
       |<PARENDER : ")"> {}            
       |<CORCHETED: "]">{} 
       |<CORCHETEI: "[">{} 
       |<LLAVEIZQ : "{"> {}
       |<LLAVEDER : "}"> {}
+      |<HASHTAG:"#">{}
       |<COMSIMPPLE : "\'"> {}
+      |<COMILLA : "\""> {}
       |<FLECHA: "=>">{}     
+      |<OPERADOR_PRODUC: "*">{} 
     }
 
 //atibutos y objetos
@@ -92,6 +99,11 @@ TOKEN:{
                  |"DatePickerIOS"|"requireNativeComponent">{System.out.println("\tObjeto:"+image);}
 
 }
+TOKEN:{
+  <COMENTARIO1:"//"(<TXT>)*>{}
+  |<COMENTARIO2:"/*"(<TXT>)*"*/">{}
+  |<#TXT:["A"-"Z","a"-"b","0"-"9"]|"*"|"+"|"/"|":"|"-"|"_"|","|"@"|"#">
+}
 //otros
 TOKEN: {
       <IDENTIFICADOR: (["A"-"Z","a"-"z"])(["A"-"Z","a"-"z","0"-"9","_"])*>{System.out.println("Identificador:"+image);}               
@@ -100,12 +112,38 @@ TOKEN: {
       |<LIBRERIA:<COMSIMPPLE>(<PUNTO><BARRAI>)?(["A"-"Z","a"-"z","_","-"])*<COMSIMPPLE>>{}
       |<PAQUETE: (<IDENTIFICADOR><PUNTO>)*<IDENTIFICADOR>>{}
       |<COMENTARIO:<BARRA><BARRA><TEXT>>{}
-      |<COLOR:<COMSIMPPLE>"rgba"<PARENIZQ><NUMERO>
-        <COMA><NUMERO><COMA><NUMERO><COMA><NUMERO><PARENDER><COMSIMPPLE>>{}      
+      |<COLOR:<COMSIMPPLE>(("rgba"<PARENIZQ><NUMERO>
+        <COMA><NUMERO><COMA><NUMERO><COMA><NUMERO><PARENDER>)|("#"<NUMERO>))<COMSIMPPLE>>{}      
 }   
 
 
 void startLexico() : {}{
-  (_estilos()|_import())*<EOF>
+  (__comentario()|__atributos_objetos()|__otros()|__palabras_reservadas()|__signos())*<EOF> 
+  {System.out.println("\n-> El archivo es valido");}    
+}
+void __palabras_reservadas():{Token t;}{
+  
+    (t=<IMPORT>|t=<CLASS>|t=<EXTENDS>|t=<RETURN>|t=<SUPER>|t=<THIS>|t=<IF>|t=<FOR>
+    |t=<WHILE>|t=<CONST>|t=<SWITCH>|t=<CASE>|t=<FUNCION>|t=<NULL>|t=<DEFAUL>|t=<FROM>|t=<VAR>)
+    {System.out.println("\npalabra reservada   ->"+t.image);} 
+    {System.out.println("\t\t\t\t\t\tThis is ok");}      
+}
+void __signos():{}{
+  <PUNTOYCOMA>|<COMA>|<GUION_MENOS>|<MAS>|<MENOR>|<MAYOR>|<NEGADOR>|<INTEROGANTE>|<ASPER>|<BRARRRA>|<IGUAL>|<DOSPUNTO>
+  |<PUNTO>|<BARRA>|<BARRAI>|<PARENIZQ>|<PARENDER>|<CORCHETED>|<CORCHETEI>
+  |<LLAVEIZQ>|<LLAVEDER>|<HASHTAG>|<COMSIMPPLE>|<COMILLA>|<FLECHA>|<OPERADOR_PRODUC>
+  {System.out.println("\t\t\t\t\t\tThis is ok");}    
+}
+void __atributos_objetos():{}{
+  <ATRIBUTO>|<OBJETO>
+  {System.out.println("\t\t\t\t\t\tThis is ok");}    
 }
 
+void __otros():{}{
+    <IDENTIFICADOR>|<NUMERO>|<TEXT>|<LIBRERIA>|<PAQUETE>|<COMENTARIO>|<COLOR>
+    {System.out.println("\t\t\t\t\t\tThis is ok");}    
+}
+void __comentario():{}{
+  <COMENTARIO1>|<COMENTARIO2>
+  
+}
