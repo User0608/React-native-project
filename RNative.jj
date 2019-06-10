@@ -20,7 +20,7 @@ PARSER_BEGIN(RNative)
         }
       }  
       try {
-        parser.startLexico();
+        parser.startSintatico();
         System.out.println ("El archivo es valido.");
       }
       catch(ParseException e){
@@ -104,8 +104,9 @@ TOKEN: {
     }   
 
 
-void startLexico() : {}{
-  (_estilos()|_import())*<EOF>
+
+void startSintatico():{}{
+    (_estilos()|_import())*<EOF>
 }
 void _import():{}{
   <IMPORT>(<IDENTIFICADOR><COMA>)?(<LLAVEIZQ><OBJETO>
