@@ -1,3 +1,95 @@
+if (condition) {
+   
+    if (condition) {
+           while (condicion) {
+                
+            x=1;
+           }
+
+    
+    }
+    
+}
+else if (condicion) {
+
+}
+
+else { 
+  
+}
+
+for (i = 0;condicion; i++) { 
+ 
+}
+
+while (condicion) {
+  
+}
+
+do {
+
+}while (coindicion);
+
+switch(expression) {
+  case x:   
+    break;
+  case y:    
+    break;
+  default:
+}
+
+
+
+class HelloReactNative extends Component{
+     LeftButton: function(route, navigator, index){
+
+    }
+}
+
+ BotonDerecho: function(route, navigator, index){
+
+}
+
+  Nombres={[
+            {key: 'Devin'},
+            {key: 'Jackson'},
+            {key: 'James'},
+            {key: 'Joel'},
+            {key: 'John'},
+            {key: 'Jillian'},
+            {key: 'Jimmy'},
+            {key: 'Julie'}]}
+
+
+ <Image  style={styles.container}> 
+            <View>  
+                <Text style={styles.title}></Text> 
+                <TouchableHighlight onPress={this.onLogin.bind} style={styles.boton}>
+                    <Text style={styles.textoBoton}></Text>
+                </TouchableHighlight>
+            </View>
+            </Image>
+               <View style={styles.container}>
+
+        <Text style={styles.welcome}>        
+        </Text>
+
+        <Text style={styles.instructions}>
+        
+        </Text>
+
+        <Text style={styles.instructions}>
+        
+        </Text>
+      </View>
+ <Image  style={styles.container} > 
+    <Text>   </Text>
+</Image>
+
+
+
+
+
 const styles = StyleSheet.create({
     boton:{
         width: 300,

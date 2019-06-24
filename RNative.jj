@@ -12,10 +12,10 @@ PARSER_BEGIN(RNative)
       else{      
         try {
           parser = new RNative(new java.io.FileInputStream(args[0]));
-            System.out.println ("Analizando archivo" + args[0] );
+            System.out.println ("Analizando archivo" + args[0]+"\n\n");
         }
         catch(java.io.FileNotFoundException e) {
-          System.out.println ("El fichero " + args[0] + " no ha sido encontrado.");
+          System.out.println ("El fichero " + args[0] + " no ha sido encontrado.\n");
           return;
         }
       }  
@@ -41,29 +41,34 @@ PARSER_END(RNative)
 SKIP : { " " |  "\t"|  "\n"| "\r"| "\r\n"}
 //palabras reservadas
 TOKEN:{
-      <IMPORT :"import">{System.out.println("< Import:"+image+" >");} 
+      <IMPORT :"import">{} 
       |<CLASS:"class"> {} 
       |<EXTENDS :"extends"> {} 
       |<RETURN:"return"> {} 
       |<SUPER:"super"> {} 
       |<THIS:"this"> {} 
       |<IF:"if"> {}  
+      |<ELSE:"else"> {}             
       |<FOR:"for"> {}  
       |<WHILE:"while"> {}  
+      |<DO:"do"> {} 
       |<CONST:"const"> {} 
       |<SWITCH:"switch">{} 
+      |<BREAK:"break">{} 
       |<CASE:"case"> {} 
       |<FUNCION:"function">{}                 
       |<NULL:"null"> {}  
       |<DEFAUL:"default"> {}  
       |<FROM:"from"> {} 
       |<VAR:"var"> {} 
+      |<KEY:"key"> {} 
       }
 
 TOKEN: {
       <PUNTOYCOMA : ";"> {}     
       |<COMA : ","> {} 
       |<GUION: "-">{}
+      |<MAS: "+">{}
       |<MENOR: "<">{}
       |<MAYOR: ">">{}
       |<IGUAL: "=">{}
@@ -83,16 +88,16 @@ TOKEN: {
 TOKEN:{
   <ATRIBUTO:"width"|"height"|"backgroundColor"|"alignItems"|"justifyContent"|"textAlign"
                  |"marginTop"|"marginLeft"|"marginRight"|"marginBottom"|"borderRadius"
-                 |"borderWidth"|"padding"|"color"|"flex"|"fontSize">{System.out.println("\tAtributo :"+image);}
+                 |"borderWidth"|"padding"|"color"|"flex"|"fontSize">{}
 
-  |<OBJETO:"ActivityIndicator"|"AppRegistry"|"StyleSheet"|"Text"|"View"
+  |<OBJETO:"ActivityIndicator"|"AppRegistry"|"StyleSheet"|"Text"|"View"|"Image"
                  |"Button"|"AppRegistry"|"Navigator"|"TouchableHighlight"|"Component"
-                 |"DatePickerIOS"|"requireNativeComponent">{System.out.println("\tObjeto:"+image);}
+                 |"DatePickerIOS"|"requireNativeComponent">{}
 
 }
 //clase
 TOKEN: {
-      <IDENTIFICADOR: (["A"-"Z","a"-"z"])(["A"-"Z","a"-"z","0"-"9","_"])*>{System.out.println("Identificador:"+image);}               
+      <IDENTIFICADOR: (["A"-"Z","a"-"z"])(["A"-"Z","a"-"z","0"-"9","_"])*>{}               
       |<NUMERO: (["0"-"9"])+(<PUNTO>)?(["0"-"9"])*>{}  
       |<TEXT:(["A"-"Z","a"-"z","0"-"9","*","_","-"])+> {}      
       |<LIBRERIA:<COMSIMPPLE>(<PUNTO><BARRAI>)?(["A"-"Z","a"-"z","_","-"])*<COMSIMPPLE>>{}
@@ -106,19 +111,114 @@ TOKEN: {
 
 
 void startSintatico():{}{
-    (_estilos()|_import())*<EOF>
+    (_estilos()|_import()|_arreglo()|__clase()__funcion()|_etiqueta()|_if()
+      |_for()|_switch()|_while()|_do_while())*<EOF>
 }
-void _import():{}{
+
+void _arreglo():{Token token=null;}{
+     token = <IDENTIFICADOR><IGUAL><LLAVEIZQ><CORCHETEI>
+    <LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA><LLAVEDER>(<COMA><LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA><LLAVEDER>)*
+    <CORCHETED><LLAVEDER>{System.out.println("Arreglo de nombre: " + token.image+"\t\t\t--> valida");}
+}
+
+
+void __funcion():{Token token=null;}{
+ token=<IDENTIFICADOR><DOSPUNTO><FUNCION><PARENIZQ><IDENTIFICADOR>(<COMA><IDENTIFICADOR>)*<PARENDER><LLAVEIZQ>/* FALTA CODIGO*/<LLAVEDER>
+ {System.out.println("Funcion: " + token.image+"\t\t\t--> valida");}
+}
+
+void __clase():{Token token=null;}{
+  <CLASS>token=<IDENTIFICADOR>(<EXTENDS><OBJETO>)?<LLAVEIZQ>(__funcion())*<LLAVEDER>
+   {System.out.println("clase: " + token.image+"\t\t\t--> valida");}
+}
+
+void _import():{Token token=null;}{
   <IMPORT>(<IDENTIFICADOR><COMA>)?(<LLAVEIZQ><OBJETO>
   (<COMA><OBJETO>)*<LLAVEDER>)?<FROM><LIBRERIA><PUNTOYCOMA>
-  {System.out.println("\t\t\t\t\tThis is Ok");}
+ 
 }
-void _atributos():{}{
+void _atributos():{Token token=null;}{
   <LLAVEIZQ><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>)
   (<COMA><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>))*<LLAVEDER>
-  {System.out.println("\t\t\t\t\tThis is Ok");}
+  
 }
-void _estilos():{}{
-  <CONST ><IDENTIFICADOR><IGUAL><PAQUETE><PARENIZQ><LLAVEIZQ><IDENTIFICADOR><DOSPUNTO>_atributos()
+void _atrib_estiqueta():{Token token=null;}{
+ <IDENTIFICADOR><IGUAL><LLAVEIZQ>(<LLAVEIZQ>)?<PAQUETE><LLAVEDER>(<LLAVEDER>)?
+ 
+}
+  
+void _estilos():{Token token=null;}{
+  <CONST>token=<IDENTIFICADOR><IGUAL><PAQUETE><PARENIZQ><LLAVEIZQ><IDENTIFICADOR><DOSPUNTO>_atributos()
   (<COMA><IDENTIFICADOR><DOSPUNTO>_atributos())*<LLAVEDER><PARENDER>
+   {System.out.println("Definicion de estilo:" + token.image+"\t\t\t--> valida");}
 }
+void _etiqueta():{Token token=null;}{
+  <MENOR>token=<OBJETO>(_atrib_estiqueta())*<MAYOR>(LOOKAHEAD(2)_etiqueta())*<MENOR><BARRA><OBJETO><MAYOR>
+   {System.out.println("Objeto de nombre: " + token.image+"\t\t\t--> valida");}
+
+}
+
+void _if():{}{
+ (<ELSE>)?<IF>  {System.out.println("Estructura if encontrada\t\t\t"+"--> valida");}
+ <PARENIZQ>_condicion()<PARENDER><LLAVEIZQ>
+ /**/
+ (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+ /**/
+ <LLAVEDER>(LOOKAHEAD(2)<ELSE>{System.out.println("Estructura else encontrada\t\t\t"+"--> valida");}
+  <LLAVEIZQ>
+  /**/
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  /**/
+  <LLAVEDER>)?
+
+}
+
+void _switch():{}{
+  <SWITCH><PARENIZQ><IDENTIFICADOR><PARENDER><LLAVEIZQ>
+  (_case())*(<DEFAUL><DOSPUNTO>)?
+  <LLAVEDER>
+  {System.out.println("Estructura switch encontrada\t\t\t"+"--> valida");}
+}
+void _case():{}{
+  <CASE><IDENTIFICADOR><DOSPUNTO>
+  /**/
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  /**/
+  <BREAK><PUNTOYCOMA>
+}
+void _while():{}{
+  <WHILE><PARENIZQ>_condicion()<PARENDER><LLAVEIZQ>
+  /**/
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  /**/<LLAVEDER>
+    {System.out.println("Estructura while encontrada\t\t\t"+"--> valida");}
+}
+void _do_while():{}{
+   <DO><LLAVEIZQ>
+   /**/
+   (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+   /**/<LLAVEDER> <WHILE><PARENIZQ>_condicion()<PARENDER><PUNTOYCOMA>
+     {System.out.println("Estructura do while encontrada\t\t\t"+"--> valida");}
+}
+
+void _for():{}{
+  <FOR><PARENIZQ>_condicion_for()<PARENDER><LLAVEIZQ>
+  /**/
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  /**/
+  <LLAVEDER>
+    {System.out.println("Estructura for encontrada\t\t\t"+"--> valida");}
+}
+void _condicion():{}{
+    (<IDENTIFICADOR>((<MAYOR>|<MENOR>|<IGUAL>)(<IDENTIFICADOR>|<NUMERO>))?)
+}
+
+void _condicion_for():{}{
+  _asigna_valor()_condicion()<PUNTOYCOMA>_asigna_valor()
+}
+void _asigna_valor():{}{
+  ((<OBJETO><IDENTIFICADOR><IGUAL><IDENTIFICADOR>)
+  |(<IDENTIFICADOR>((<IGUAL><NUMERO>)|(<MAS><MAS>)|(<GUION><GUION>))))(<PUNTOYCOMA>)?
+}
+
+
