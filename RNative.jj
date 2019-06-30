@@ -127,7 +127,9 @@ void _arreglo():{Token token=null;}{
 
 
 void __funcion():{Token token=null;}{
- token=<IDENTIFICADOR><DOSPUNTO><FUNCION><PARENIZQ><IDENTIFICADOR>(<COMA><IDENTIFICADOR>)*<PARENDER><LLAVEIZQ>/* FALTA CODIGO*/<LLAVEDER>
+ token=<IDENTIFICADOR><DOSPUNTO><FUNCION><PARENIZQ><IDENTIFICADOR>(<COMA><IDENTIFICADOR>)*<PARENDER><LLAVEIZQ>
+ (_if()|_while()|_switch()|_do_while()|_return())*
+ <LLAVEDER>
  {System.out.println("Funcion: " + token.image+"\t\t\t--> valida");}
 }
 
@@ -158,11 +160,11 @@ void _atributos():{Token token=null;}{
 }
 void _render():{}{
     <RENDER><PARENIZQ><PARENDER><LLAVEIZQ>
-   ( (_arreglo())+|_return())
+   ( (_arreglo())*)_return()
     <LLAVEDER>
 }
 void _return():{}{
-  <RETURN><PARENIZQ>(_etiqueta())<PARENDER>
+  <RETURN>((<PARENIZQ>(_etiqueta())<PARENDER>)|<NULL>|<NUMERO>)
 }
 void _atrib_estiqueta():{Token token=null;}{
  <IDENTIFICADOR><IGUAL><LLAVEIZQ>(<LLAVEIZQ>)?(<PAQUETE>|<IDENTIFICADOR>)<LLAVEDER>(<LLAVEDER>)?
@@ -180,16 +182,17 @@ void _etiqueta():{Token token=null;}{
 
 }
 
+
 void _if():{}{
  (<ELSE>)?<IF>  {System.out.println("Estructura if encontrada\t\t\t"+"--> valida");}
  <PARENIZQ>_condicion()<PARENDER><LLAVEIZQ>
  /**/
- (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+ (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
  /**/
  <LLAVEDER>(LOOKAHEAD(2)<ELSE>{System.out.println("Estructura else encontrada\t\t\t"+"--> valida");}
   <LLAVEIZQ>
   /**/
-  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
   /**/
   <LLAVEDER>)?
 
@@ -204,21 +207,21 @@ void _switch():{}{
 void _case():{}{
   <CASE><IDENTIFICADOR><DOSPUNTO>
   /**/
-  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
   /**/
   <BREAK><PUNTOYCOMA>
 }
 void _while():{}{
   <WHILE><PARENIZQ>_condicion()<PARENDER><LLAVEIZQ>
   /**/
-  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
   /**/<LLAVEDER>
     {System.out.println("Estructura while encontrada\t\t\t"+"--> valida");}
 }
 void _do_while():{}{
    <DO><LLAVEIZQ>
    /**/
-   (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+   (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
    /**/<LLAVEDER> <WHILE><PARENIZQ>_condicion()<PARENDER><PUNTOYCOMA>
      {System.out.println("Estructura do while encontrada\t\t\t"+"--> valida");}
 }
@@ -226,7 +229,7 @@ void _do_while():{}{
 void _for():{}{
   <FOR><PARENIZQ>_condicion_for()<PARENDER><LLAVEIZQ>
   /**/
-  (_asigna_valor()|_if()|_while()|_switch()|_do_while())*
+  (_asigna_valor()|_if()|_while()|_switch()|_do_while()|_return())*
   /**/
   <LLAVEDER>
     {System.out.println("Estructura for encontrada\t\t\t"+"--> valida");}
