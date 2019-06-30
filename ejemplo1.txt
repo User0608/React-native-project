@@ -1,16 +1,14 @@
 if (condition) {
    
-    if (condition) {
+    if(condition) {
            while (condicion) {
                 
             x=1;
             
-           }
-
-    
-    }
-    
+           }   
+    }    
 }
+
 else if (condicion) {
 
 }

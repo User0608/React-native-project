@@ -45,6 +45,7 @@ TOKEN:{
       |<CLASS:"class"> {} 
       |<EXTENDS :"extends"> {} 
       |<RETURN:"return"> {} 
+      |<RENDER:"render"> {} 
       |<SUPER:"super"> {} 
       |<THIS:"this"> {} 
       |<IF:"if"> {}  
@@ -52,10 +53,12 @@ TOKEN:{
       |<FOR:"for"> {}  
       |<WHILE:"while"> {}  
       |<DO:"do"> {} 
+      |<LET:"let"> {} 
       |<CONST:"const"> {} 
       |<SWITCH:"switch">{} 
       |<BREAK:"break">{} 
       |<CASE:"case"> {} 
+      |<CONSTRUCTOR:"constructor"> {} 
       |<FUNCION:"function">{}                 
       |<NULL:"null"> {}  
       |<DEFAUL:"default"> {}  
@@ -90,9 +93,10 @@ TOKEN:{
                  |"marginTop"|"marginLeft"|"marginRight"|"marginBottom"|"borderRadius"
                  |"borderWidth"|"padding"|"color"|"flex"|"fontSize">{}
 
-  |<OBJETO:"ActivityIndicator"|"AppRegistry"|"StyleSheet"|"Text"|"View"|"Image"
+  |<OBJETO:"ActivityIndicator"|"Menu"|"AppRegistry"|"StyleSheet"|"Text"|"View"|"Image"
                  |"Button"|"AppRegistry"|"Navigator"|"TouchableHighlight"|"Component"
-                 |"DatePickerIOS"|"requireNativeComponent">{}
+                 |"DatePickerIOS"|"requireNativeComponent"
+                 |"ul"|"h1"|"h2"|"h3"|"h"|"p"|"u">{}
 
 }
 //clase
@@ -103,21 +107,21 @@ TOKEN: {
       |<LIBRERIA:<COMSIMPPLE>(<PUNTO><BARRAI>)?(["A"-"Z","a"-"z","_","-"])*<COMSIMPPLE>>{}
       |<PAQUETE: (<IDENTIFICADOR><PUNTO>)*<IDENTIFICADOR>>{}
       |<COMENTARIO:<BARRA><BARRA><TEXT>>{}
-      |<COLOR:<COMSIMPPLE>"rgba"<PARENIZQ><NUMERO>
-        <COMA><NUMERO><COMA><NUMERO><COMA><NUMERO><PARENDER><COMSIMPPLE>>{}      
+      |<COLOR:<COMSIMPPLE>"rgba"<PARENIZQ><NUMERO><COMA><NUMERO><COMA><NUMERO><COMA><NUMERO><PARENDER><COMSIMPPLE>>{}      
      
-    }   
-
-
-
+    }
+    /*
+    _estilos()|_import()|_arreglo()|__clase()|_funcion()|_etiqueta()|_if()
+      |_for()|_switch()|_while()|_do_while()
+      */
 void startSintatico():{}{
-    (_estilos()|_import()|_arreglo()|__clase()__funcion()|_etiqueta()|_if()
-      |_for()|_switch()|_while()|_do_while())*<EOF>
+    (_import())*(__clase())*<EOF>
 }
 
 void _arreglo():{Token token=null;}{
-     token = <IDENTIFICADOR><IGUAL><LLAVEIZQ><CORCHETEI>
-    <LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA><LLAVEDER>(<COMA><LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA><LLAVEDER>)*
+   token =<IDENTIFICADOR><IGUAL><LLAVEIZQ><CORCHETEI>
+    (<LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA>(<LLAVEDER>)(<COMA><LLAVEIZQ><KEY><DOSPUNTO><LIBRERIA><LLAVEDER>)*
+      |<COMSIMPPLE><TEXT><COMSIMPPLE>(<COMA><COMSIMPPLE><TEXT><COMSIMPPLE>)*)
     <CORCHETED><LLAVEDER>{System.out.println("Arreglo de nombre: " + token.image+"\t\t\t--> valida");}
 }
 
@@ -128,22 +132,40 @@ void __funcion():{Token token=null;}{
 }
 
 void __clase():{Token token=null;}{
-  <CLASS>token=<IDENTIFICADOR>(<EXTENDS><OBJETO>)?<LLAVEIZQ>(__funcion())*<LLAVEDER>
-   {System.out.println("clase: " + token.image+"\t\t\t--> valida");}
+  <CLASS>token=<IDENTIFICADOR>(<EXTENDS>(<OBJETO>|<PAQUETE>))?<LLAVEIZQ>
+  (__funcion()|_constructor()|_render())*
+  <LLAVEDER>
+    {System.out.println("clase: " + token.image+"\t\t\t--> valida");}
 }
+void _constructor():{}{
+  <CONSTRUCTOR><PARENIZQ>(<IDENTIFICADOR>(<COMA><IDENTIFICADOR>)*)?<PARENDER>
+  <LLAVEIZQ>
+    _super()
+  <LLAVEDER>
 
+}
+void _super():{}{
+  <SUPER><PARENIZQ><IDENTIFICADOR>(<COMA><IDENTIFICADOR>)*<PARENDER>
+}
 void _import():{Token token=null;}{
-  <IMPORT>(<IDENTIFICADOR><COMA>)?(<LLAVEIZQ><OBJETO>
-  (<COMA><OBJETO>)*<LLAVEDER>)?<FROM><LIBRERIA><PUNTOYCOMA>
- 
+  <IMPORT>(<IDENTIFICADOR>)?(<COMA>)?(<LLAVEIZQ><OBJETO>
+  (<COMA><OBJETO>)*<LLAVEDER>)?<FROM><LIBRERIA>(<PUNTOYCOMA>)? 
 }
 void _atributos():{Token token=null;}{
   <LLAVEIZQ><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>)
   (<COMA><ATRIBUTO><DOSPUNTO>(<LIBRERIA>|<NUMERO>|<COLOR>))*<LLAVEDER>
   
 }
+void _render():{}{
+    <RENDER><PARENIZQ><PARENDER><LLAVEIZQ>
+   ( (_arreglo())+|_return())
+    <LLAVEDER>
+}
+void _return():{}{
+  <RETURN><PARENIZQ>(_etiqueta())<PARENDER>
+}
 void _atrib_estiqueta():{Token token=null;}{
- <IDENTIFICADOR><IGUAL><LLAVEIZQ>(<LLAVEIZQ>)?<PAQUETE><LLAVEDER>(<LLAVEDER>)?
+ <IDENTIFICADOR><IGUAL><LLAVEIZQ>(<LLAVEIZQ>)?(<PAQUETE>|<IDENTIFICADOR>)<LLAVEDER>(<LLAVEDER>)?
  
 }
   
@@ -153,7 +175,7 @@ void _estilos():{Token token=null;}{
    {System.out.println("Definicion de estilo:" + token.image+"\t\t\t--> valida");}
 }
 void _etiqueta():{Token token=null;}{
-  <MENOR>token=<OBJETO>(_atrib_estiqueta())*<MAYOR>(LOOKAHEAD(2)_etiqueta())*<MENOR><BARRA><OBJETO><MAYOR>
+  <MENOR>token=<OBJETO>(_atrib_estiqueta())*(<MAYOR>)?(LOOKAHEAD(2)_etiqueta())*(<MENOR>)?<BARRA>(<OBJETO>)?<MAYOR>
    {System.out.println("Objeto de nombre: " + token.image+"\t\t\t--> valida");}
 
 }
