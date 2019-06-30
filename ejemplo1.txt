@@ -4,6 +4,7 @@ if (condition) {
            while (condicion) {
                 
             x=1;
+            
            }
 
     
