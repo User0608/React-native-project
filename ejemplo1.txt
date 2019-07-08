@@ -1,16 +1,22 @@
 if (condition) {
    
-    if (condition) {
+    if(condition) {
            while (condicion) {
                 
             x=1;
             
+<<<<<<< HEAD
            }
 
     
     }
     
+=======
+           }   
+    }    
+>>>>>>> 0ff8220bced316109e73724a8f96080a771ab5c6
 }
+
 else if (condicion) {
 
 }

@@ -1,0 +1,83 @@
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+import React, { Component } from 'react';
+import { AppRegistry, StyleSheet, Text, View } from 'react-native';
+
+
+class App extends React.Component {
+  
+  constructor(props) {
+    super(props)
+  }
+
+   BotonDerecho: function(route, navigator, index){
+
+   }
+    
+
+   RightButton: function(route, navigator, index){
+      var dato=0;
+
+      for (var i =0; i > 0; i --) {
+        ani=b * c + d - g / 8;
+      }
+    
+        return null
+
+    }
+
+
+
+    Title: function(route, navigator, index){
+         if(condicion ){
+            return null
+        }
+        if (condition) {
+   
+            if(condition) {
+               while (condicion) {
+                    
+                x=1;            
+              }   
+            }    
+        }
+
+        return 5          
+      
+    }  
+
+
+  render() {
+
+  Nombres={[
+            {key: 'Devin'},
+            {key: 'Jackson'},
+            {key: 'James'},
+            {key: 'Joel'},
+            {key: 'John'},
+            {key: 'Jillian'},
+            {key: 'Jimmy'},
+            {key: 'Julie'}]}
+   
+   return  (<Menu options={menuOptions} />)
+  }
+}
+
+class Menu_op extends React.Component {
+  constructor(props) {
+    super(props)
+  }
+  
+  render() {
+   
+    return (
+          <View>  
+                <Text style={styles.title}></Text> 
+                <TouchableHighlight onPress={this.onLogin.bind} style={styles.boton}>
+                    <Text style={styles.textoBoton}></Text>
+                </TouchableHighlight>
+          </View>
+    )
+  }
+}
